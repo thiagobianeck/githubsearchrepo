@@ -5,12 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>GitHub Finder</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="dist/css/sweetalert2.min.css">
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
     <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
     <link rel="stylesheet" href="dist/css/skins/skin-blue.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+
 </head>
 
     <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
@@ -37,13 +39,9 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
-                Github Finder
+                <i class="fab fa-github-alt"></i> <strong>GITHUB</strong>Finder
                 <small>Buscador de Usuários do Github</small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li class="active">Finder</li>
-            </ol>
         </section>
 
         <!-- Main content -->
@@ -58,48 +56,65 @@
                         <!-- /.box-header -->
                         <!-- form start -->
                         <form id="form-search" class="form-horizontal">
-                            <div class="box-body">
-                                <div class="form-group">
-                                    <label for="input-user" class="col-sm-3 control-label">Nome do usuario: </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="input-user" value="jeroennoten"
-                                               placeholder="Digite o username...">
-                                    </div>
+                            <div class="box-body" style="margin: 35px 0px">
+                                <div class="input-group">
+                                    <span class="input-group-addon">@</span>
+                                    <input id="input-user" type="text" class="form-control input-lg" placeholder="Digita aqui que eu busco...">
                                 </div>
-
-
                             </div>
                             <!-- /.box-body -->
                             <div class="box-footer">
-                                <button type="submit" class="btn btn-success pull-right">Buscar</button>
+                                <button type="submit" class="btn btn-flat btn-lg btn-success pull-right">Procura lá!</button>
                             </div>
                             <!-- /.box-footer -->
                         </form>
                     </div>
                 </div>
                 <div id="card-user" class="col-md-6" style="display: none">
-                    <div class="box box-widget widget-user-2">
+
+                    <div class="box box-widget widget-user">
                         <!-- Add the bg color to the header using any of the bg-* classes -->
-                        <div class="widget-user-header bg-yellow">
-                            <div class="widget-user-image">
-                                <img id="card-img" class="img-circle"
-                                     src="https://adminlte.io/themes/AdminLTE/dist/img/user7-128x128.jpg"
-                                     alt="User Avatar">
-                            </div>
-                            <!-- /.widget-user-image -->
-                            <h3 class="widget-user-username" id="card-nome"></h3>
-                            <h5 class="widget-user-desc" id="card-bio">Lead Developer</h5>
+                        <div class="widget-user-header bg-navy-active">
+                            <h3 class="widget-user-username" id="card-login">Alexander Pierce</h3>
+                            <h5 class="widget-user-desc" id="card-nome">Founder &amp; CEO</h5>
                         </div>
-                        <div class="box-footer no-padding">
-                            <ul class="nav nav-stacked">
-                                <li><a href="#">Repositórios <span class="pull-right badge bg-blue" id="span-repos"></span></a></li>
-                                <li><a href="#">Seguidores <span id="card-seguidores" class="pull-right badge bg-green"></span></a>
-                                </li>
-                                <li><a href="#">Seguindo <span id="card-seguindo" class="pull-right badge bg-red">842</span></a></li>
-                            </ul>
+                        <div class="widget-user-image">
+                            <img id="card-img" class="img-circle" src="../dist/img/user1-128x128.jpg" alt="User Avatar">
+                        </div>
+                        <div class="box-body">
+                            <p id="card-bio" style="margin-top: 25px"></p>
+                        </div>
+                        <div class="box-footer">
+                            <div class="row">
+                                <div class="col-sm-4 border-right">
+                                    <div class="description-block">
+                                        <h5 class="description-header" id="card-seguidores">3,200</h5>
+                                        <span class="description-text">SEGUIDORES</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-sm-4 border-right">
+                                    <div class="description-block">
+                                        <h5 class="description-header" id="card-seguindo">13,000</h5>
+                                        <span class="description-text">SEGUINDO</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-sm-4">
+                                    <div class="description-block">
+                                        <h5 class="description-header" id="card-repos">35</h5>
+                                        <span class="description-text">REPOSITÓRIOS</span>
+                                    </div>
+                                    <!-- /.description-block -->
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class="row">
@@ -128,40 +143,6 @@
                                         </table>
                                     </div>
                                 </div>
-<!--                                <div class="row">-->
-<!--                                    <div class="col-sm-5">-->
-<!--                                        <div class="dataTables_info" id="example1_info" role="status"-->
-<!--                                             aria-live="polite">Showing 1 to 10 of 57 entries-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                    <div class="col-sm-7">-->
-<!--                                        <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">-->
-<!--                                            <ul class="pagination">-->
-<!--                                                <li class="paginate_button previous disabled" id="example1_previous"><a-->
-<!--                                                        href="#" aria-controls="example1" data-dt-idx="0" tabindex="0">Previous</a>-->
-<!--                                                </li>-->
-<!--                                                <li class="paginate_button active"><a href="#" aria-controls="example1"-->
-<!--                                                                                      data-dt-idx="1" tabindex="0">1</a>-->
-<!--                                                </li>-->
-<!--                                                <li class="paginate_button "><a href="#" aria-controls="example1"-->
-<!--                                                                                data-dt-idx="2" tabindex="0">2</a></li>-->
-<!--                                                <li class="paginate_button "><a href="#" aria-controls="example1"-->
-<!--                                                                                data-dt-idx="3" tabindex="0">3</a></li>-->
-<!--                                                <li class="paginate_button "><a href="#" aria-controls="example1"-->
-<!--                                                                                data-dt-idx="4" tabindex="0">4</a></li>-->
-<!--                                                <li class="paginate_button "><a href="#" aria-controls="example1"-->
-<!--                                                                                data-dt-idx="5" tabindex="0">5</a></li>-->
-<!--                                                <li class="paginate_button "><a href="#" aria-controls="example1"-->
-<!--                                                                                data-dt-idx="6" tabindex="0">6</a></li>-->
-<!--                                                <li class="paginate_button next" id="example1_next"><a href="#"-->
-<!--                                                                                                       aria-controls="example1"-->
-<!--                                                                                                       data-dt-idx="7"-->
-<!--                                                                                                       tabindex="0">Next</a>-->
-<!--                                                </li>-->
-<!--                                            </ul>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
                             </div>
                         </div>
                         <!-- /.box-body -->
@@ -169,8 +150,6 @@
                 </div>
 
             </div>
-
-
         </section>
         <!-- /.content -->
     </div>
@@ -187,21 +166,17 @@
     </footer>
 
 </div>
-<script src="models/User.js"></script>
+<script src="models/UserGithub.js"></script>
 <script src="classes/Fetch.js"></script>
+<script src="dist/js/sweetalert2.all.min.js"></script>
 <script src="dist/js/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="dist/js/jquery.dataTables.min.js"></script>
 <script src="dist/js/dataTables.bootstrap.min.js"></script>
 <script src="dist/js/adminlte.min.js"></script>
 <script src="classes/Utils.js"></script>
-<script src="models/User.js"></script>
+<script src="models/UserGithub.js"></script>
 <script src="controllers/UserController.js"></script>
 <script src="index.js"></script>
-<script>
-    $(function () {
-
-    })
-</script>
 </body>
 </html>

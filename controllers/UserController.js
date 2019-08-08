@@ -1,49 +1,85 @@
 class UserController {
 
     constructor(formSearch, inputUser) {
-
         this.formSearch = document.getElementById(formSearch);
         this.inputUserGithub = document.getElementById(inputUser);
         this.onSubmit();
-        this.onEdit();
-    }
-
-    onEdit() {
-        document.querySelector('#box-user-update .btn-cancel')
-            .addEventListener('click', e => {
-                this.showPanelCreate();
-            });
-
+        this.userGitHub = new UserGitHub();
     }
 
     onSubmit() {
-
+        let isValid = false;
         this.formSearch.addEventListener('submit', event => {
             event.preventDefault();
+            this.hideCardUser();
+            this.hideDataTable();
             this.getValues(this.formSearch).then(result => {
-                this.showCardUser();
-                this.prencheCard(result);
+                console.log('resultado no Onsubmit', result);
+                isValid = false;
+                if(result) {
+                    isValid = true;
+                    this.userGitHub.preenche(result);
+                    this.showCardUser(this.userGitHub);
+                } else {
+                    Swal.fire('Ihhh.. Usuário não encontrado! Tente de novo! Vai que dá certo')
+                }
+
+            }).finally(() => {
+                console.log('isvalid', isValid);
+                if(isValid) this.preencheDataTable();
+            }).catch(e => {
+                console.log('erro', e);
             });
-
-            this.preencheDataTable();
-
-
-
         });
-
     }
 
-    prencheCard(dados){
+    preencheCard(dados){
+        document.querySelector('#card-login').innerHTML = dados.login;
         document.querySelector('#card-nome').innerHTML = dados.nome;
         document.querySelector('#card-bio').innerHTML = dados.bio;
-        document.querySelector('#card-seguidores').innerHTML = dados.nro_seguidores;
-        document.querySelector('#card-seguindo').innerHTML = dados.nro_seguindo;
-        document.querySelector('#card-img').src = dados.imagem_url;
-        document.querySelector('#span-repos').innerHTML = dados.repositorios;
+        document.querySelector('#card-seguidores').innerHTML = dados.seguidores;
+        document.querySelector('#card-seguindo').innerHTML = dados.seguindo;
+        document.querySelector('#card-img').src = dados.imagemUrl;
+        document.querySelector('#card-repos').innerHTML = dados.numRepo;
+    }
+
+    retornaImgLang(language) {
+
+        if(!language) return '';
+        let lang = `${language}`.toLowerCase();
+        switch (lang) {
+            case 'java':
+                lang = 'java';
+                break;
+            case 'html':
+                lang = 'html5';
+                break;
+            case 'javascript':
+                lang = 'js';
+                break;
+            case 'php':
+                lang = 'php';
+                break;
+            case 'python':
+                lang = 'python';
+                break;
+            case 'css':
+                lang = 'css3';
+                break;
+            default:
+                lang = '';
+        }
+
+        if(lang) {
+            return `<span style="font-size: 30px"><i class="fab fa-${lang}"></i></span>`;
+        }
+
+        return language.toUpperCase();
     }
 
     preencheDataTable() {
         let dados;
+        let self = this;
         this.getRepositories().then(result => {
             dados = result;
         }).finally(() => {
@@ -52,68 +88,31 @@ class UserController {
             this.showDataTable();
 
             table = $('#tbl-repositorios').DataTable({
+                responsive: true,
+                language: {
+                    "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Portuguese.json"
+                },
                 data: dados,
                 columns: [
                     {data: 'name',
                         render: function(data, type, full, meta) {
-                            console.log({data, type, full, meta});
                             let titulo = `${data}`.toUpperCase();
                             return `<a href="${full.url}" target="_blank">${titulo}</a>`;
                         }},
                     {data: 'description'},
-                    // {data: 'language'},
                     {data: 'language',
                         class: 'text-center',
                         render: function(data, type, full, meta) {
-                            if(data){
-                                let lang = '';
-                                switch (`${data}`.toLowerCase()) {
-                                    case 'java':
-                                        lang = 'fa-java';
-                                        break;
-                                    case 'html':
-                                        lang = 'fa-html5';
-                                        break;
-                                    case 'javascript':
-                                        lang = 'fa-js';
-                                        break;
-                                    case 'php':
-                                        lang = 'fa-php';
-                                        break;
-                                    case 'python':
-                                        lang = 'fa-python';
-                                        break;
-                                    default:
-                                        lang = '';
-                                }
-                                if(lang) {
-                                    return `<span style="font-size: 30px"><i class="fab ${lang}"></i></span>`;
-                                }
-                                return `${data}`.toUpperCase();
-                            }
-                            return '';
+                            return self.retornaImgLang(data);
                         }},
                     {data: 'stars', class: 'text-center'},
                 ]
-                // 'paging': true,
-                // 'lengthChange': false,
-                // 'searching': false,
-                // 'ordering': true,
-                // 'info': true,
-                // 'autoWidth': false
             });
         });
 
 
 
     }
-
-    criaEstrelas(numeroEstrelas) {
-
-        let retorno = '';
-        let star = '<i class="fa fa-star"></i>'
-    }
-
 
     async getValues(formSearch) {
 
@@ -123,27 +122,20 @@ class UserController {
         let username = this.inputUserGithub.value;
 
         if(!username){
-            this.inputUserGithub.parentElement.classList.add('has-error');
+
             isValid = false;
         } else {
             this.inputUserGithub.parentElement.classList.remove('has-error');
             let url = `https://api.github.com/users/${username}`;
             let result = await Fetch.get(url);
-
-            if(result.name) {
-                Object.assign(user, {
-                    nome: result.name,
-                    imagem_url: result.avatar_url,
-                    bio: result.bio,
-                    nro_seguidores: result.followers,
-                    nro_seguindo: result.following,
-                    repositorios: result.public_repos
-                });
+            if(result.message) {
+                isValid = false;
             }
-
+            if(result.login) user = result;
         }
 
         if(!isValid){
+            this.inputUserGithub.parentElement.classList.add('has-error');
             return false;
         }
 
@@ -170,37 +162,24 @@ class UserController {
         return repositories;
     }
 
-    addLine(dataUser) {
-
-    }
-
-    addEventsTr(tr) {
 
 
-    }
-
-    showCardUser(){
+    showCardUser(dados){
+        this.preencheCard(dados);
         document.querySelector('#card-user').style.display = 'block';
+    }
+
+    hideCardUser(dados){
+        document.querySelector('#card-user').style.display = 'none';
     }
 
     showDataTable(){
         document.querySelector('#data-repos').style.display = 'block';
     }
 
-
-    updateCount() {
-
-        let numberUsers = 0;
-        let numberAdmin = 0;
-
-        [...this.tableEl.children].forEach(tr => {
-            numberUsers++;
-            let user = JSON.parse(tr.dataset.user);
-            if(user._admin) numberAdmin++;
-        });
-
-        document.querySelector('#number-users').innerHTML = numberUsers;
-        document.querySelector('#number-users-admin').innerHTML = numberAdmin;
+    hideDataTable(){
+        document.querySelector('#data-repos').style.display = 'none';
     }
+
 
 }
